@@ -36,17 +36,19 @@ resource "aws_instance" "strapi" {
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
   tags = {
-    Name = "StrapiServer"
+    Name = "Strapi-Docker"
   }
 
-  user_data = <<-EOF
-              #!/bin/bash
-              sudo apt-get update -y
-              sudo apt-get install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo docker run -d -p 80:80 -p 1337:1337 your-docker-image
-              EOF
+  provisioner "remote-exec" {
+  inline = [
+      "sudo apt-get update -y",
+      "sudo apt-get install -y docker.io",
+      "sudo systemctl start docker",
+      "sudo systemctl enable docker",
+      "sudo apt-get install git -y",
+      "sudo docker run -d -p 80:80 -p 1337:1337 veera1016/strapi:1.0.0",
+  ]
+}
 
 
     connection {

@@ -1,29 +1,20 @@
 # Use an official Node.js runtime as a parent image
-FROM node:20
+FROM node:14-alpine
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Install necessary system dependencies
-RUN apt-get update \
-    && apt-get install -y curl gnupg2 \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g yarn \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install Strapi CLI globally
+RUN npm install -g strapi@latest
 
-# Install PM2 globally
-RUN npm install -g pm2
-
-# Clone Strapi project
-RUN yes | npx create-strapi-app@latest my-strapi-project --quickstart --skip-cloud --no-run
+# Create a new Strapi project
+RUN strapi new my-strapi-app --quickstart --no-run
 
 # Set the working directory to the Strapi project
-WORKDIR /app/my-strapi-project
+WORKDIR /usr/src/app/my-strapi-app
 
-# Expose the port that Strapi runs on (default is 1337)
+# Expose the Strapi default port
 EXPOSE 1337
 
-# Start Strapi using PM2
-CMD ["pm2-runtime", "npm", "--", "run", "develop"]
+# Start Strapi
+CMD ["npm", "start"]

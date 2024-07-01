@@ -13,7 +13,7 @@ RUN npm install
 COPY strapi-project/ .
 
 # Build the application (if necessary)
-# RUN npm run build
+RUN npm run build
 
 # Create a minimal production image
 FROM node:18-alpine

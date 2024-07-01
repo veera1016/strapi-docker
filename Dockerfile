@@ -1,19 +1,23 @@
-FROM node:18-alpine
+# Use the official Node.js image as a parent image
+FROM node:18
 
-WORKDIR /app
+# Set the working directory in the container
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json to the working directory
-COPY package.json package-lock.json ./
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-# Install Strapi and dependencies
-RUN npm install --legacy-peer-deps
+# Install dependencies
+RUN npm install
 
-# Copy the current directory contents into the container at /usr/src/app
+# Copy the rest of the application code
 COPY . .
 
+# Build the Strapi application (if needed, adjust based on your setup)
 RUN npm run build
-# Expose the port that Strapi runs on
+
+# Expose the port on which Strapi runs
 EXPOSE 1337
 
-# Run Strapi with PM2
-CMD ["pm2-runtime", "start", "npm", "--", "start"]
+# Define the command to run your app
+CMD ["npm", "start"]

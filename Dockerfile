@@ -13,7 +13,7 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Build the Strapi application (if needed, adjust based on your setup)
+# Build the Strapi application (if applicable)
 RUN npm run build
 
 # Expose the port on which Strapi runs

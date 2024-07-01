@@ -9,7 +9,7 @@ RUN npm install -g pm2
 COPY package*.json package-lock.json ./
 
 # Install Strapi and dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy the current directory contents into the container at /usr/src/app
 COPY . .

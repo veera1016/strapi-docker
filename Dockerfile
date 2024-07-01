@@ -1,20 +1,24 @@
-# Use an official Node.js runtime as a parent image
-FROM node:14-alpine
+# Use the official Node.js image as the base image
+FROM node:18
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Install Strapi CLI globally
-RUN npm install -g strapi@latest
+# Copy package.json and package-lock.json (or yarn.lock) to the working directory
+COPY package*.json ./
 
-# Create a new Strapi project
-RUN strapi new my-strapi-app --quickstart --no-run
+# Install dependencies
+RUN npm install
 
-# Set the working directory to the Strapi project
-WORKDIR /usr/src/app/my-strapi-app
+# Copy the rest of the application code to the working directory
+COPY . .
 
-# Expose the Strapi default port
+# Build the Strapi application
+RUN npm run build
+
+# Expose the port that Strapi will run on
 EXPOSE 1337
 
-# Start Strapi
+# Start the Strapi server
 CMD ["npm", "start"]
+

@@ -1,12 +1,9 @@
 FROM node:18-alpine
 
-WORKDIR /usr/src/app
-
-# Install PM2 globally
-RUN npm install -g pm2
+WORKDIR /app
 
 # Copy package.json and package-lock.json to the working directory
-COPY package*.json package-lock.json ./
+COPY package.json package-lock.json ./
 
 # Install Strapi and dependencies
 RUN npm install --legacy-peer-deps

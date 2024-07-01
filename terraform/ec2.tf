@@ -1,10 +1,12 @@
+# Variables
 variable "private_key_path" {
   description = "Path to the private key file"
   type        = string
 }
 
+# Security Group
 resource "aws_security_group" "strapi_sg" {
-  name        = "bharat-security-group"
+  name        = "ashok-security-group"
   description = "Security group for Strapi EC2 instance"
 
   ingress {
@@ -29,28 +31,42 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
+# AMI Data Source
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["amazon"] # Canonical's AWS account ID
+}
+
+# EC2 Instance
 resource "aws_instance" "strapi" {
-  ami           = "ami-04b70fa74e45c3917"  # Correct AMI ID for ap-south-1
-  instance_type = "t2.medium"              # Changed to t2.medium
-  key_name      = "Veera"                  # Your key pair name
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
+  key_name               = var.key_pair
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
   tags = {
-    Name = "Strapi-Docker"
+    Name = "StrapiServer"
   }
 
   provisioner "remote-exec" {
   inline = [
-      "sudo apt-get update -y",
-      "sudo apt-get install -y docker.io",
-      "sudo systemctl start docker",
-      "sudo systemctl enable docker",
-      "sudo apt-get install git -y",
-      "sudo docker run -d -p 80:80 -p 1337:1337 veera1016/strapi:1.0.0",
+    "sudo apt-get update -y",
+    "sudo apt-get install -y docker.io",
+    "sudo systemctl start docker",
+    "sudo systemctl enable docker",
+    "sudo docker run -d -p 80:80 -p 1337:1337 veera1016/strapi:1.0.0",
   ]
-}
-
-
     connection {
       type        = "ssh"
       user        = "ubuntu"
@@ -58,8 +74,9 @@ resource "aws_instance" "strapi" {
       host        = self.public_ip
     }
   }
+}
 
-
+# Output
 output "instance_ip" {
   value = aws_instance.strapi.public_ip
 }

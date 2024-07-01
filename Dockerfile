@@ -1,24 +1,22 @@
 # Use the official Node.js image as the base image
 FROM node:18
 
-# Set the working directory inside the container
+# Create and change to the app directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (or yarn.lock) to the working directory
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install npm dependencies with verbose logging and clean cache
+RUN npm install -g npm@latest \
+    && npm cache clean --force \
+    && npm install --verbose
 
 # Copy the rest of the application code to the working directory
 COPY . .
 
-# Build the Strapi application
-RUN npm run build
-
-# Expose the port that Strapi will run on
+# Expose the application port
 EXPOSE 1337
 
-# Start the Strapi server
+# Start the application
 CMD ["npm", "start"]
-

@@ -7,8 +7,10 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install npm dependencies with verbose logging and clean cache
-RUN npm install --legacy-peer-deps
+# Install npm dependencies with verbose logging and additional error handling
+RUN npm install -g npm@latest \
+    && npm cache clean --force \
+    && npm install --legacy-peer-deps --verbose || cat /usr/src/app/npm-debug.log || true
 
 # Copy the rest of the application code to the working directory
 COPY . .

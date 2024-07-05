@@ -2,9 +2,6 @@ FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
-# Install PM2 globally
-RUN npm install -g pm2
-
 # Copy the package.json and package-lock.json from the strapi-code directory
 COPY strapi-project/package.json strapi-project/package-lock.json ./
 
@@ -15,8 +12,9 @@ RUN npm install
 COPY . .
 
 RUN npm run build
+
 # Expose the port that Strapi runs on
 EXPOSE 1337
 
-# Run Strapi with PM2
+# Run Strapi
 CMD ["npm", "start"]

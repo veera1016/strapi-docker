@@ -1,28 +1,22 @@
-# Use a separate builder image to install dependencies
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 
-WORKDIR /app
+WORKDIR /usr/src/app
+
+# Install PM2 globally
+RUN npm install -g pm2
 
 # Copy the package.json and package-lock.json from the strapi-code directory
 COPY strapi-project/package.json strapi-project/package-lock.json ./
 
-# Install dependencies
+# Install Strapi and dependencies
 RUN npm install
 
-# Copy the rest of the application code
-COPY strapi-project/ .
+# Copy the current directory contents into the container at /usr/src/app
+COPY . .
 
-# Build the application (if necessary)
 RUN npm run build
-
-# Create a minimal production image
-FROM node:18-alpine
-
-WORKDIR /srv/app
-
-# Copy the node_modules and built files from the builder image
-COPY --from=builder /app /srv/app
-
+# Expose the port that Strapi runs on
 EXPOSE 1337
 
-CMD ["npm", "start"]
+# Run Strapi with PM2
+CMD ["pm2-runtime", "start", "npm", "--", "start"]

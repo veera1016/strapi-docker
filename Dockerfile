@@ -19,4 +19,4 @@ RUN npm run build
 EXPOSE 1337
 
 # Run Strapi with PM2
-CMD ["pm2-runtime", "start", "npm", "--", "start"]
+CMD ["npm", "start"]
